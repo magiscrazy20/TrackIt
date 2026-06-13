@@ -318,7 +318,7 @@ body {
     justify-content: center;
     padding: 1.25rem;
     /* Deep teal backdrop with a subtle gradient for depth. */
-    background: radial-gradient(circle at 30% 20%, #1c5b66, #164b54 55%, #0f3942);
+    background: radial-gradient(circle at 30% 20%, #4fc1d6, #1f8294 55%, #094f5c);
 }
 
 .welcome-card {
