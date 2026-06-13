@@ -129,8 +129,12 @@ body {
 }
 
 .stat-card .stat-body { padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem; }
-.stat-card .stat-icon { font-size: 2rem; opacity: .85; }
-.stat-card .stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1; }
+/* Let the text column shrink instead of pushing content out of the card. */
+.stat-card .stat-body > div { min-width: 0; }
+.stat-card .stat-icon { font-size: 2rem; opacity: .85; flex-shrink: 0; }
+.stat-card .stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1.05; overflow-wrap: anywhere; }
+/* Currency amounts: a touch smaller so long values stay inside the box. */
+.stat-card .stat-amount { font-size: 1.35rem; }
 .stat-card .stat-label { font-size: .85rem; opacity: .9; }
 /* Keep this label on a single line and shrink to fit narrow cards. */
 .stat-card .stat-label-nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -450,6 +454,7 @@ body {
     /* Comfortable, slightly tighter stat cards. */
     .stat-card .stat-body { padding: .85rem 1rem; gap: .75rem; }
     .stat-card .stat-value { font-size: 1.4rem; }
+    .stat-card .stat-amount { font-size: 1.15rem; }
     .stat-card .stat-icon { font-size: 1.6rem; }
 
     .chart-box { height: 260px; }
@@ -467,6 +472,7 @@ body {
 
     /* Wider cards stack to full width with a touch more breathing room. */
     .stat-card .stat-value { font-size: 1.5rem; }
+    .stat-card .stat-amount { font-size: 1.15rem; }
 
     /* Slightly larger form controls for touch. */
     .form-control, .form-select, .btn { font-size: .95rem; }
