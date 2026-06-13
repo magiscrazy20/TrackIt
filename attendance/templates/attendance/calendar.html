@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Calendar{% endblock %}
+{% block heading %}Attendance Calendar{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h4 class="mb-0">{{ month_name }} {{ year }}</h4>
+    <div class="btn-group">
+        <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-chevron-left"></i> Prev
+        </a>
+        <a href="{% url 'attendance:calendar' %}" class="btn btn-outline-secondary btn-sm">Today</a>
+        <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-secondary btn-sm">
+            Next <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="mb-3 small">
+    <span class="me-3"><span class="legend-dot bg-success"></span>Present</span>
+    <span class="me-3"><span class="legend-dot bg-danger"></span>Absent</span>
+    {% if show_wfh %}<span class="me-3"><span class="legend-dot bg-primary"></span>WFH</span>{% endif %}
+    <span class="me-3"><span class="legend-dot bg-info"></span>Half Day</span>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table calendar-table text-center mb-0">
+            <thead class="table-light">
+                <tr>
+                    {% for d in weekday_headers %}<th>{{ d }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in weeks %}
+                <tr>
+                    {% for cell in week %}
+                        {% if cell.day == 0 %}
+                            <td class="calendar-cell empty"></td>
+                        {% else %}
+                            <td class="calendar-cell clickable {% if cell.day == today.day and month == today.month and year == today.year %}today{% endif %}"
+                                role="button" tabindex="0"
+                                data-date="{{ cell.date }}"
+                                data-label="{{ cell.day }} {{ month_name }} {{ year }}">
+                                <div class="calendar-day-num">{{ cell.day }}</div>
+                                {% if cell.record %}
+                                    <span class="calendar-badge text-bg-{{ cell.record.status_color }}"
+                                          title="{{ cell.record.get_status_display }}{% if cell.record.total_hours %} — {{ cell.record.total_hours }}h{% endif %}">
+                                        {{ cell.record.get_status_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Month summary -->
+<div class="row g-3 mt-1">
+    <div class="col-4"><div class="card text-center"><div class="card-body py-2"><div class="fw-bold text-success">{{ summary.present_days }}</div><small class="text-muted">Present</small></div></div></div>
+    <div class="col-4"><div class="card text-center"><div class="card-body py-2"><div class="fw-bold text-danger">{{ summary.absent_days }}</div><small class="text-muted">Absent</small></div></div></div>
+    <div class="col-4"><div class="card text-center"><div class="card-body py-2"><div class="fw-bold text-info">{{ summary.half_days }}</div><small class="text-muted">Half Day</small></div></div></div>
+</div>
+
+<!-- Quick-mark popup -->
+<div class="modal fade" id="markModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h6 class="modal-title mb-0">Mark Attendance</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-semibold mb-3" id="markDateLabel"></p>
+                <form method="post" action="{% url 'attendance:mark_attendance' %}" id="markForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="date" id="markDate">
+                    <input type="hidden" name="status" id="markStatus">
+
+                    <p class="small text-muted mb-2">Tap a status to save:</p>
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+                        <button type="button" class="btn btn-success px-3 fw-bold" data-status="PRESENT" title="Present">P</button>
+                        <button type="button" class="btn btn-danger px-3 fw-bold" data-status="ABSENT" title="Absent">A</button>
+                        <button type="button" class="btn btn-info px-3 fw-bold text-white" data-status="HALF_DAY" title="Half Day">H</button>
+                        {% if show_wfh %}<button type="button" class="btn btn-primary px-3 fw-bold" data-status="WFH" title="Work From Home">W</button>{% endif %}
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm text-muted mt-3" data-status="CLEAR">
+                        <i class="bi bi-eraser"></i> Clear this day
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const modalEl = document.getElementById("markModal");
+    const markModal = new bootstrap.Modal(modalEl);
+    const markForm = document.getElementById("markForm");
+    const markDate = document.getElementById("markDate");
+    const markStatus = document.getElementById("markStatus");
+    const markLabel = document.getElementById("markDateLabel");
+
+    // Open the popup when a day cell is clicked (or activated via keyboard).
+    function openCell(cell) {
+        markDate.value = cell.dataset.date;
+        markLabel.textContent = cell.dataset.label;
+        markModal.show();
+    }
+    document.querySelectorAll("td.calendar-cell.clickable").forEach(function (cell) {
+        cell.addEventListener("click", function () { openCell(cell); });
+        cell.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCell(cell); }
+        });
+    });
+
+    // Each status button sets the value and submits.
+    modalEl.querySelectorAll("button[data-status]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            markStatus.value = btn.dataset.status;
+            markForm.submit();
+        });
+    });
+})();
+</script>
+{% endblock %}

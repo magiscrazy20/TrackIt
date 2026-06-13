@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Preferences{% endblock %}
+{% block heading %}Preferences{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header bg-transparent fw-semibold">
+                <i class="bi bi-sliders me-1"></i> Your Preferences
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Name</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="text" name="name" class="form-control"
+                                       value="{{ user.name }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Work From Home -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold d-block mb-1">
+                            <i class="bi bi-house-laptop text-primary me-1"></i> Do you work from home?
+                        </label>
+                        <p class="text-muted small mb-2">We'll show Work From Home stats only if you do.</p>
+                        <div class="btn-group" role="group" aria-label="Work from home choice">
+                            <input type="radio" class="btn-check" name="show_wfh" id="wfhYes" value="yes"
+                                   {% if user.show_wfh %}checked{% endif %}>
+                            <label class="btn btn-outline-success" for="wfhYes"><i class="bi bi-check-lg"></i> Yes</label>
+                            <input type="radio" class="btn-check" name="show_wfh" id="wfhNo" value="no"
+                                   {% if not user.show_wfh %}checked{% endif %}>
+                            <label class="btn btn-outline-danger" for="wfhNo"><i class="bi bi-x-lg"></i> No</label>
+                        </div>
+                    </div>
+
+                    <!-- Per-day salary -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-block mb-1">
+                            <i class="bi bi-cash-coin text-success me-1"></i> Per Day Salary
+                        </label>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" name="per_day_salary" class="form-control"
+                                           min="0" step="0.01" placeholder="0.00" inputmode="decimal"
+                                           value="{% if user.per_day_salary %}{{ user.per_day_salary }}{% endif %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2-circle me-1"></i> Save Preferences
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Monthly Budget section -->
+        <div class="card mt-4">
+            <div class="card-header bg-transparent fw-semibold">
+                <i class="bi bi-wallet2 me-1"></i> Monthly Budget
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">Set a total spending budget for a month. It shows on the Budget Tracker page.</p>
+                <form method="post" action="{% url 'attendance:set_monthly_budget' %}" class="row g-2 align-items-end mb-3">
+                    {% csrf_token %}
+                    <div class="col-6 col-md-4">
+                        <label class="form-label small">Month</label>
+                        <select name="month" class="form-select form-select-sm">
+                            {% for num, name in months %}
+                            <option value="{{ num }}" {% if num == current_month %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label small">Year</label>
+                        <select name="year" class="form-select form-select-sm">
+                            {% for y in years %}
+                            <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label small">Amount (₹)</label>
+                        <input type="number" name="amount" class="form-control form-control-sm"
+                               min="0" step="0.01" placeholder="0.00" inputmode="decimal" required>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-check-lg"></i> Set
+                        </button>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Month</th><th class="text-end">Budget</th><th class="text-end">Action</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for b in budgets %}
+                            <tr>
+                                <td>{{ b.month_name }} {{ b.year }}</td>
+                                <td class="text-end fw-semibold">₹{{ b.amount }}</td>
+                                <td class="text-end">
+                                    <form method="post" action="{% url 'attendance:monthly_budget_delete' b.pk %}"
+                                          onsubmit="return confirm('Remove this budget?');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center text-muted py-3">No budgets set yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

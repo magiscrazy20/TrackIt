@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Attendance Manager{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <div class="text-muted">Overview as of {{ today|date:"D, d M Y" }}</div>
+</div>
+
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="card stat-card bg-grad-blue">
+            <div class="stat-body">
+                <i class="bi bi-briefcase-fill stat-icon"></i>
+                <div>
+                    <div class="stat-value">{{ total_working_days }}</div>
+                    <div class="stat-label">Working Days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="card stat-card bg-grad-green">
+            <div class="stat-body">
+                <i class="bi bi-check-circle-fill stat-icon"></i>
+                <div>
+                    <div class="stat-value">{{ present_days }}</div>
+                    <div class="stat-label">Present Days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="card stat-card bg-grad-red">
+            <div class="stat-body">
+                <i class="bi bi-x-circle-fill stat-icon"></i>
+                <div>
+                    <div class="stat-value">{{ absent_days }}</div>
+                    <div class="stat-label">Absent Days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if show_wfh %}
+    <div class="col-6 col-xl-3">
+        <div class="card stat-card bg-grad-purple">
+            <div class="stat-body">
+                <i class="bi bi-house-laptop-fill stat-icon"></i>
+                <div>
+                    <div class="stat-value">{{ wfh_days }}</div>
+                    <div class="stat-label">Work From Home</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="col-6 col-xl-3">
+        <div class="card stat-card bg-grad-teal">
+            <div class="stat-body">
+                <i class="bi bi-cash-coin stat-icon"></i>
+                <div>
+                    <div class="stat-value">₹{{ month_payout }}</div>
+                    <div class="stat-label">{{ current_month_name }} Payout</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Recent records -->
+    <div class="col-12">
+        <div class="card glass-card h-100">
+            <div class="card-header bg-transparent fw-semibold">
+                <i class="bi bi-clock-history text-primary me-1"></i> Recent Attendance
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive table-scroll" style="max-height: 268px;">
+                    <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr><th>Date</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in recent_records %}
+                            <tr>
+                                <td>{{ rec.date|date:"d M" }}</td>
+                                <td><span class="badge text-bg-{{ rec.status_color }}">{{ rec.get_status_display }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="2" class="text-center text-muted py-3">No records yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

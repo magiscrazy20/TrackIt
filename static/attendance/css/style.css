@@ -1,0 +1,473 @@
+/* ------------------------------------------------------------------ *
+ *  Attendance Manager — custom styles (layout, sidebar, cards, dark)  *
+ * ------------------------------------------------------------------ */
+
+:root {
+    --sidebar-width: 240px;
+    --sidebar-bg: #1e293b;
+    --sidebar-bg-active: #334155;
+    --sidebar-text: #cbd5e1;
+    --sidebar-text-active: #ffffff;
+    --topbar-h: 60px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    /* Soft gradient so the glass sidebar has colour to blur behind it. */
+    background: linear-gradient(135deg, #eef2ff 0%, #f1f5f9 45%, #faf5ff 100%);
+    background-attachment: fixed;
+}
+
+[data-bs-theme="dark"] body {
+    background: linear-gradient(135deg, #0b1020 0%, #000000 55%, #120a1f 100%);
+    background-attachment: fixed;
+}
+/* Darker frosted glass in dark mode. */
+[data-bs-theme="dark"] .sidebar {
+    background: linear-gradient(160deg, rgba(99, 102, 241, .16), rgba(255, 255, 255, .04));
+    border-right: 1px solid rgba(255, 255, 255, .08);
+}
+[data-bs-theme="dark"] .sidebar-nav .nav-link:hover { background: #1a1a1a; }
+
+.app-wrapper { display: flex; min-height: 100vh; }
+
+/* ---------------------------- Sidebar ---------------------------- */
+.sidebar {
+    width: var(--sidebar-width);
+    /* Glassmorphism: translucent tint + blur of whatever sits behind. */
+    background: linear-gradient(160deg, rgba(37, 99, 235, .32), rgba(30, 41, 59, .55));
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-right: 1px solid rgba(255, 255, 255, .15);
+    box-shadow: 4px 0 24px rgba(15, 23, 42, .15);
+    color: var(--sidebar-text);
+    position: fixed;
+    inset: 0 auto 0 0;
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s ease;
+    z-index: 1040;
+}
+
+.sidebar-brand {
+    height: var(--topbar-h);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 0 1.25rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.sidebar-brand i { color: #38bdf8; }
+
+.sidebar-nav { padding: 1rem .75rem; display: flex; flex-direction: column; gap: .25rem; }
+
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .85rem;
+    border-radius: .5rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: .95rem;
+    transition: background .15s, color .15s;
+}
+
+.sidebar-nav .nav-link:hover { background: var(--sidebar-bg-active); color: #fff; }
+
+.sidebar-nav .nav-link.active {
+    background: #2563eb;
+    color: var(--sidebar-text-active);
+    font-weight: 600;
+}
+
+.sidebar-nav .nav-link i { font-size: 1.1rem; width: 1.25rem; text-align: center; }
+
+/* --------------------------- Main area --------------------------- */
+.main-area {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    height: var(--topbar-h);
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1.25rem;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+[data-bs-theme="dark"] .topbar { background: #121212; border-color: #2a2a2a; }
+
+.topbar-title { font-weight: 600; }
+.topbar-actions { margin-left: auto; }
+
+.content { padding: 1.5rem; flex: 1; }
+
+/* --------------------------- Stat cards -------------------------- */
+.stat-card {
+    border: none;
+    border-radius: .85rem;
+    color: #fff;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+}
+
+.stat-card .stat-body { padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem; }
+.stat-card .stat-icon { font-size: 2rem; opacity: .85; }
+.stat-card .stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1; }
+.stat-card .stat-label { font-size: .85rem; opacity: .9; }
+/* Keep this label on a single line and shrink to fit narrow cards. */
+.stat-card .stat-label-nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 575.98px) {
+    .stat-card .stat-label-nowrap { font-size: .72rem; }
+}
+
+.bg-grad-blue   { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.bg-grad-green  { background: linear-gradient(135deg, #16a34a, #22c55e); }
+.bg-grad-red    { background: linear-gradient(135deg, #dc2626, #ef4444); }
+.bg-grad-yellow { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.bg-grad-purple { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+.bg-grad-teal   { background: linear-gradient(135deg, #0d9488, #14b8a6); }
+
+/* Generic cards in dark mode — but keep the coloured stat cards' gradients. */
+[data-bs-theme="dark"] .card:not(.stat-card) { background: #121212; border-color: #2a2a2a; }
+
+/* ---------------------------- Calendar --------------------------- */
+.calendar-table { table-layout: fixed; }
+.calendar-table td {
+    height: 90px;
+    vertical-align: top;
+    border: 1px solid #e2e8f0;
+    padding: .35rem;
+}
+[data-bs-theme="dark"] .calendar-table td { border-color: #2a2a2a; }
+
+.calendar-day-num { font-size: .8rem; font-weight: 600; color: #64748b; }
+.calendar-cell.clickable { cursor: pointer; transition: background .12s; }
+.calendar-cell.clickable:hover { background: #eff6ff; }
+[data-bs-theme="dark"] .calendar-cell.clickable:hover { background: #1a1a1a; }
+.calendar-cell.today { outline: 2px solid #2563eb; outline-offset: -2px; }
+.calendar-cell.empty { background: #f8fafc; }
+[data-bs-theme="dark"] .calendar-cell.empty { background: #000000; }
+
+.calendar-badge {
+    display: block;
+    margin-top: .3rem;
+    font-size: .7rem;
+    border-radius: .35rem;
+    padding: .15rem .3rem;
+    text-align: center;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Mobile: fit the whole month on screen — no horizontal scrolling.
+   Cells shrink and the status badge becomes a small colour dot. */
+@media (max-width: 575.98px) {
+    /* The calendar must never scroll sideways on mobile. */
+    .calendar-table {
+        width: 100%;
+        table-layout: fixed;
+    }
+    .calendar-table th,
+    .calendar-table td {
+        width: 14.2857%;       /* 7 equal columns = exactly the screen width */
+        min-width: 0;
+        overflow: hidden;
+    }
+    .calendar-table th {
+        padding: .3rem .1rem;
+        font-size: .7rem;
+    }
+    .calendar-table td {
+        height: 46px;
+        padding: .15rem;
+    }
+    .calendar-day-num { font-size: .68rem; }
+    .calendar-badge {
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        margin: .2rem auto 0;
+        border-radius: 50%;
+        font-size: 0;          /* hide the label text, keep the colour */
+        line-height: 0;
+    }
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    margin-right: .35rem;
+    vertical-align: middle;
+}
+
+/* --------------------------- Glassmorphism cards ---------------- */
+.glass-card {
+    background: rgba(255, 255, 255, .55) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, .6) !important;
+    box-shadow: 0 8px 30px rgba(30, 41, 59, .12);
+    border-radius: 1rem !important;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+.glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 38px rgba(30, 41, 59, .18);
+}
+.glass-card .card-header {
+    border-bottom: 1px solid rgba(148, 163, 184, .25);
+}
+[data-bs-theme="dark"] .glass-card {
+    background: rgba(255, 255, 255, .06) !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+}
+[data-bs-theme="dark"] .glass-card .card-header {
+    border-bottom-color: rgba(255, 255, 255, .1);
+}
+/* Make the scroll header blend into the glass card. */
+[data-bs-theme="dark"] .glass-card .table-light > tr > th,
+[data-bs-theme="dark"] .glass-card thead.table-light th {
+    background: rgba(255, 255, 255, .08);
+    color: #e2e8f0;
+}
+
+/* --------------------------- Misc tweaks ------------------------- */
+.table-responsive { border-radius: .5rem; }
+
+/* Scrollable table: ~5 rows visible (via max-height), rest on scroll.
+   The header stays pinned at the top while scrolling. */
+.table-scroll { overflow-y: auto; }
+.table-scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.chart-box { position: relative; height: 300px; }
+
+/* --------------------------- Attendance heatmap ------------------ */
+.heatmap-scroll { overflow-x: auto; padding-bottom: .25rem; }
+.heatmap-grid { display: flex; gap: 4px; }
+.hm-col { display: flex; flex-direction: column; gap: 4px; }
+.hm-cell {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    display: inline-block;
+    background: rgba(148, 163, 184, .18);   /* default = empty */
+}
+.hm-empty { background: rgba(148, 163, 184, .18); }
+.hm-future { background: transparent; }
+[data-bs-theme="dark"] .hm-empty { background: rgba(255, 255, 255, .07); }
+
+/* Month labels above the grid, aligned to the 14px + 4px column pitch. */
+.heatmap-months { display: flex; gap: 4px; margin-bottom: 4px; height: 1rem; }
+.hm-month {
+    width: 14px;
+    font-size: .65rem;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.heatmap-legend .hm-cell { width: 11px; height: 11px; vertical-align: middle; margin-right: .15rem; }
+
+/* Animated fire streak badge. */
+.streak-badge {
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    color: #fff;
+}
+.streak-badge .bi-fire { animation: flicker 1.6s ease-in-out infinite; }
+@keyframes flicker {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: .7; transform: scale(1.15); }
+}
+
+.breakdown-label { width: 70px; flex-shrink: 0; color: var(--bs-secondary-color); }
+.breakdown-count { min-width: 34px; text-align: center; }
+
+/* --------------------------- Welcome page ------------------------ */
+.welcome-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    /* Animated multi-stop gradient for a lively, simple backdrop. */
+    background: linear-gradient(135deg, #1d4ed8, #7c3aed, #2563eb, #4f46e5);
+    background-size: 300% 300%;
+    animation: welcomeGradient 14s ease infinite;
+}
+@keyframes welcomeGradient {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.welcome-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 2.75rem 2rem 2.25rem;
+    text-align: center;
+    /* Frosted glass card. */
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 1.5rem;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+    color: #fff;
+    animation: welcomeRise .6s cubic-bezier(.2, .8, .2, 1);
+}
+@keyframes welcomeRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-icon {
+    width: 68px; height: 68px;
+    margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .18);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+}
+.welcome-icon i { font-size: 2rem; color: #fff; }
+
+.welcome-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin-bottom: 1.75rem;
+}
+
+.welcome-msg {
+    background: rgba(255, 255, 255, .9);
+    color: #1e293b;
+    font-size: .85rem;
+    border-radius: .6rem;
+    padding: .5rem .75rem;
+    margin-bottom: 1rem;
+}
+
+/* Input with a leading icon. */
+.welcome-field {
+    position: relative;
+    margin-bottom: 1rem;
+}
+.welcome-field i {
+    position: absolute;
+    left: 1rem; top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, .7);
+    font-size: 1.05rem;
+}
+.welcome-field input {
+    width: 100%;
+    padding: .85rem 1rem .85rem 2.6rem;
+    font-size: 1rem;
+    color: #fff;
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: .75rem;
+    outline: none;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.welcome-field input::placeholder { color: rgba(255, 255, 255, .65); }
+.welcome-field input:focus {
+    background: rgba(255, 255, 255, .2);
+    border-color: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .18);
+}
+
+.welcome-btn {
+    width: 100%;
+    padding: .85rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4f46e5;
+    background: #fff;
+    border: none;
+    border-radius: .75rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    transition: transform .12s, box-shadow .15s;
+}
+.welcome-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .25);
+}
+.welcome-btn i { transition: transform .15s; }
+.welcome-btn:hover i { transform: translateX(3px); }
+
+/* Dim backdrop shown behind the off-canvas sidebar on mobile. */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    z-index: 1035;
+}
+.sidebar-backdrop.show { display: block; }
+
+/* --------------------------- Responsive -------------------------- */
+@media (max-width: 991.98px) {
+    /* Off-canvas sidebar slides in over the content. */
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: 2px 0 18px rgba(0, 0, 0, .35);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .main-area { margin-left: 0; }
+
+    .content { padding: 1rem; }
+    .topbar { padding: 0 .85rem; gap: .5rem; }
+    .topbar-title { font-size: 1rem; }
+
+    /* Comfortable, slightly tighter stat cards. */
+    .stat-card .stat-body { padding: .85rem 1rem; gap: .75rem; }
+    .stat-card .stat-value { font-size: 1.4rem; }
+    .stat-card .stat-icon { font-size: 1.6rem; }
+
+    .chart-box { height: 260px; }
+}
+
+@media (max-width: 575.98px) {
+    .content { padding: .75rem; }
+    .topbar { gap: .4rem; }
+
+    /* Bigger tap target for the menu button. */
+    #sidebarToggle { padding: .35rem .6rem; font-size: 1.1rem; }
+
+    /* Hide the "Hi, name" greeting text (keep Logout + theme buttons). */
+    .topbar-greeting { display: none !important; }
+
+    /* Wider cards stack to full width with a touch more breathing room. */
+    .stat-card .stat-value { font-size: 1.5rem; }
+
+    /* Slightly larger form controls for touch. */
+    .form-control, .form-select, .btn { font-size: .95rem; }
+}

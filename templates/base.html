@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Attendance Manager{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- App styles -->
+    <link href="{% static 'attendance/css/style.css' %}?v=9" rel="stylesheet">
+</head>
+<body>
+<div class="app-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-calendar2-check-fill"></i>
+            <span>Track It..!</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'attendance:dashboard' %}"
+               class="nav-link {% if active == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a href="{% url 'attendance:calendar' %}"
+               class="nav-link {% if active == 'calendar' %}active{% endif %}">
+                <i class="bi bi-calendar3"></i><span>Calendar</span>
+            </a>
+            <a href="{% url 'attendance:budget' %}"
+               class="nav-link {% if active == 'budget' %}active{% endif %}">
+                <i class="bi bi-wallet2"></i><span>Budget Tracker</span>
+            </a>
+            <a href="{% url 'attendance:preferences' %}"
+               class="nav-link {% if active == 'preferences' %}active{% endif %}">
+                <i class="bi bi-sliders"></i><span>Preferences</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Backdrop behind the off-canvas sidebar (mobile) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- Main area -->
+    <div class="main-area">
+        <!-- Top bar -->
+        <header class="topbar">
+            <button class="btn btn-sm btn-light" id="sidebarToggle" type="button">
+                <i class="bi bi-list"></i>
+            </button>
+            <h5 class="topbar-title mb-0">{% block heading %}Attendance Manager{% endblock %}</h5>
+            <div class="topbar-actions d-flex align-items-center gap-2">
+                {% if user_name %}
+                    <a href="{% url 'attendance:preferences' %}" class="text-decoration-none small topbar-greeting"
+                       title="Edit your preferences">
+                        <i class="bi bi-person-circle"></i> Hi, {{ user_name }}
+                    </a>
+                    <a href="{% url 'attendance:logout' %}" class="btn btn-sm btn-outline-danger"
+                       title="Log out">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                {% endif %}
+                <button class="btn btn-sm btn-outline-secondary" id="themeToggle" type="button"
+                        title="Toggle dark mode">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Messages -->
+        <main class="content">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- App scripts -->
+<script src="{% static 'attendance/js/app.js' %}?v=5"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

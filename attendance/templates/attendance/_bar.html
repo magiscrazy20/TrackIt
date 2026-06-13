@@ -1,0 +1,9 @@
+{% widthratio value total 100 as bar_pct %}
+<div class="breakdown-row d-flex align-items-center mb-2">
+    <span class="breakdown-label small">{{ label }}</span>
+    <div class="progress flex-grow-1 mx-2" style="height:8px;">
+        <div class="progress-bar bg-{{ color }}" role="progressbar"
+             style="width: {% if total %}{{ bar_pct }}{% else %}0{% endif %}%;"></div>
+    </div>
+    <span class="breakdown-count small fw-semibold text-bg-{{ color }} badge">{{ value }}</span>
+</div>
